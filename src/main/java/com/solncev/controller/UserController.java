@@ -4,6 +4,8 @@ import com.solncev.dto.CreateUserRequestDto;
 import com.solncev.dto.UserResponseDto;
 import com.solncev.model.User;
 import com.solncev.repository.UserRepository;
+import com.solncev.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,14 +20,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 public class UserController {
 
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @GetMapping(value = {"/users/{id}", "users"})
     public List<UserResponseDto> user(@PathVariable(required = false) Optional<Integer> id) {
@@ -38,12 +38,7 @@ public class UserController {
                             .build()
                     ).collect(Collectors.toList());
         } else {
-            return userRepository.findAll().stream().map(u -> UserResponseDto.builder()
-                    .name(u.getName())
-                    .id(u.getId())
-                    .email(u.getEmail())
-                    .build()
-            ).collect(Collectors.toList());
+            return userService.findAll();
         }
     }
 
